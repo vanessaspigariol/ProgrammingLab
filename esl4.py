@@ -8,8 +8,8 @@ class CSVfile():
             list=self.split()
             print(list)
 
-    csvfile=CSVfile
-    csvfile=open('shampoo_sales.csv', 'r')
-    print(CSVfile)
-    print(CSVfile.name)
-    print(get_data(CSVfile))
+csvfile=CSVfile(shampoo_sales.csv)
+csvfile=open('shampoo_sales.csv', 'r')
+print(csvfile.name)
+data=csvfile.get_data()
+print(data)
