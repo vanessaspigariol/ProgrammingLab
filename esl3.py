@@ -6,7 +6,7 @@ def sum_csv(my_file):
         if elements[0] != 'Date':
             #date = elements[0]
             value = elements[1]
-            values.append(float(value))
+            values.append(float(value)) #trasforma le stringhe in valori numerici
     if len(values) == 0:
         return None
     somma = sum(values)
