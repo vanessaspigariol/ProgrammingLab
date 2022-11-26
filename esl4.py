@@ -16,4 +16,4 @@ class CSVfile():
 
     csv_file = CSVFile("shampoo_sales.csv") #istanzi l'oggetto csv_file, passandogli come argomento il nome del file
     data = csv_file.get_data() # chiami il metodo get_data dell'oggetto e salvi l'output nella variabile data
-    print(data)                                                          # infine puoi stampare il contenuto della variabile per controllare cosa fa il metodo get_data
+    print(data) # infine puoi stampare il contenuto della variabile per controllare cosa fa il metodo get_data

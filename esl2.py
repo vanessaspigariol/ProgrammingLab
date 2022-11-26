@@ -1,5 +1,6 @@
-my_lista=[1,5,99,4,2]
-def sum_list(my_lista):    
-    sum(my_lista)
+def sum_list(my_lista):
+    return sum(my_lista)
 
-print (sum_list(my_lista))
+the_list=[15,22,9,1,3]
+risultato=sum_list(the_list)
+print('Il risultato è: {}'.format(risultato))
