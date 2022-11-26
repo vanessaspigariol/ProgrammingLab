@@ -1,6 +1,6 @@
-def sum_csv(my_file):
+def sum_csv(file_name):
     values = []
-    fun = open(my_file, 'r')
+    fun = open(file_name, 'r')
     for line in fun:
         elements = line.split(',')
         if elements[0] != 'Date':
