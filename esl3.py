@@ -9,7 +9,8 @@ def sum_csv(my_file):
             values.append(float(value)) #trasforma le stringhe in valori numerici
     if len(values) == 0:
         return None
-    somma = sum(values)
+    else:
+        somma = sum(values)
 
     return somma
 
