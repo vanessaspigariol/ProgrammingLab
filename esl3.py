@@ -15,4 +15,4 @@ def sum_csv(file_name):
     return somma
 
 
-print(sum_csv("shampoo_sales.csv"))
+#print(sum_csv("shampoo_sales.csv"))
