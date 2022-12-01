@@ -1,4 +1,4 @@
-class CSVfile():
+class CSVFile():
     def __init__(self, name):
         self.name=name
 
