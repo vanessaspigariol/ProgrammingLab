@@ -15,5 +15,5 @@ class CSVfile():
         my_file.close()
         print (data)
 
-my_file=CSVfile("shampoo_sales.csv")
-my_file.get_data()
+#my_file=CSVfile("shampoo_sales.csv") 
+#my_file.get_data()
