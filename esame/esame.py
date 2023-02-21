@@ -47,7 +47,8 @@ class CSVTimeSeriesFile(CSVFile):
                 item[1]=int(item[1])
             except ValueError:
                 raise ExamException('errore, numero passeggeri non intero')
-            numerical_data.append(item) #aggiungo la lista contenente data e numero passeggeri dopo aver controllato la validità del dato
+            if int(date[0])>0 and int(date[1])>0 and int(date[1])<=12:
+                numerical_data.append(item) #aggiungo la lista contenente data e numero passeggeri dopo aver controllato la validità del dato
             return numerical_data
             
 time_series_file=CSVTimeSeriesFile(name='data.csv')
@@ -77,8 +78,9 @@ def detect_similar_monthly_variations(time_series,years):
         #trovo tutti i dati corrispondendi ad anno1
         tempo=element[0].split('-') #divido anno e mese
         if tempo[0]==anno1:
+            mese=(tempo[1])-1
             try:
-                prima_lista.append(int(element[1])) #passeggeri anno1
+                prima_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del primo anno')
     seconda_lista=[] #lista elementi secondo anno
@@ -86,22 +88,19 @@ def detect_similar_monthly_variations(time_series,years):
         #trovo tutti i dati corrispondendi ad anno2
         tempo=element[0].split('-') #divido anno e meso
         if tempo[0]==anno2:
+            mese=(tempo[1])-1
             try:
-                seconda_lista.append(int(element[1])) #passeggeri anno2
+                seconda_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del secondo anno')
     if prima_lista==[]:
         raise ExamException('errore, lista anno1 vuota')
     if prima_lista is not list:
         raise ExamException('errore, lista anno1 non è una lista')
-    if len(prima_lista)!=12:
-        raise ExamException('errore, lista anno1 non ha un elemento per mese')
     if seconda_lista==[]:
         raise ExamException('errore, lista anno2 vuota')
     if seconda_lista is not list:
         raise ExamException('errore, lista anno2 non è una lista')
-    if len(seconda_lista)!=12:
-        raise ExamException('errore, lista anno2 non ha un elemento per mese')
     variazione1=[] #lista con variazioni tra valori prima lista
     for i in prima_lista:
             if i==prima_lista[0]:
