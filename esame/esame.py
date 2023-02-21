@@ -53,3 +53,28 @@ class CSVTimeSeriesFile(CSVFile):
                 numerical_data.append(item) #aggiungo la lista contenente data e numero passeggeri dopo aver controllato la validità del dato
             return numerical_data
             
+time_series_file=CSVTimeSeriesFile(name='data.csv')
+time_series=time_series_file.get_data()
+
+def detect_similar_monthly_variations(time_series,years):
+    if time_series==[]:
+        raise ExamException('errore, lista dati vuota')
+    if years is not list:
+        raise ExamException('errore, non è presente una lista con gli anni da valutare')
+    if years==[]:
+        raise ExamException('errore, lista anni vuota')
+    if len(years)!=2:
+        raise ExamException('errore, lista anni ha una lunghezza non valida')
+    try:
+        anno1=int(years[0])
+    except Exception:
+        raise ExamException('errore, primo anno non intero')
+    try:
+        anno2=int(years[1])
+    except Exception:
+        raise ExamException('errore, secondo anno non intero')
+    if int(anno1)<1949 or int(anno1)>1960 or int(anno2)<1949 or int(anno2)>1960:
+        raise ExamException('errore, anni non validi')
+    if int(anno1)-int(anno2)!=1 and int(anno1)-int(anno2)!=-1:
+        raise ExamException('errore, anni non consecutivi')
+        
