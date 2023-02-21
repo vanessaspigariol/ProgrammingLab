@@ -44,7 +44,7 @@ class CSVTimeSeriesFile(CSVFile):
             except ValueError:
                 raise ExamException('errore, anno o meso sono valori non interi')
             try:
-                passenger=int(item[1])
+                int(item[1])
             except ValueError:
                 raise ExamException('errore, numero passeggeri non intero')
             if int(year)<1949 or int(year)>1960 or int(month)<=0 or int(month)>12:
@@ -77,4 +77,69 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, anni non validi')
     if int(anno1)-int(anno2)!=1 and int(anno1)-int(anno2)!=-1:
         raise ExamException('errore, anni non consecutivi')
-        
+    prima_lista=[]
+    for element in time_series:
+        #trovo tutti i dati corrispondendi ad anno1
+        tempo=element[0].split('-')
+        if type(tempo[0])==anno1:
+            try:
+                prima_lista.append(int(element[1]))
+            except:
+                raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del primo anno')
+    seconda_lista=[]
+    for element in time_series:
+        #trovo tutti i dati corrispondendi ad anno2
+        tempo=element[0].split('-')
+        if type(tempo[0])==anno2:
+            try:
+                seconda_lista.append(int(element[1]))
+            except:
+                raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del secondo anno')
+    if prima_lista==[]:
+        raise ExamException('errore, lista anno1 vuota')
+    if prima_lista is not list:
+        raise ExamException('errore, lista anno1 non è una lista')
+    if len(prima_lista)!=12:
+        raise ExamException('errore, lista anno1 non ha un elemento per mese')
+    if seconda_lista==[]:
+        raise ExamException('errore, lista anno2 vuota')
+    if seconda_lista is not list:
+        raise ExamException('errore, lista anno2 non è una lista')
+    if len(seconda_lista)!=12:
+        raise ExamException('errore, lista anno2 non ha un elemento per mese')
+    variazione1=[]
+    for i in prima_lista:
+            if i==prima_lista[0]:
+                prev_value=i
+            else:
+                differenza=int(i-prev_value)
+                prev_value=i
+                variazione1.append(float(differenza))
+    variazione2=[]
+    for i in seconda_lista:
+            if i==seconda_lista[0]:
+                prev_value=i
+            else:
+                differenza=int(i-prev_value)
+                prev_value=i
+                variazione2.append(float(differenza))
+    if variazione1==[]:
+            raise ExamException('errore, variazione1 non ha valori numerici')
+    if len(variazione1)!=11:
+        raise ExamException('errore, lista variazione1 non ha 11 elementi')
+    if variazione1==None:
+        raise ExamException('errore, variazione1 non ha valori')
+    if variazione2==[]:
+            raise ExamException('errore, variazione2 non ha valori numerici')
+    if len(variazione2)!=11:
+        raise ExamException('errore, lista variazione2 non ha 11 elementi')
+    if variazione2==None:
+        raise ExamException('errore, variazione2 non ha valori')
+    lista_finale=[]
+    for i in enumerate(10):
+        differenza=variazione1[i]-variazione2[i]
+        if type(differenza)>=-2 and type(differenza)<=2:
+            lista_finale.append(True)
+        else:
+            lista_finale.append(False)
+    return lista_finale
