@@ -31,6 +31,8 @@ class CSVTimeSeriesFile(CSVFile):
         string_data=super().get_data() #chiamo metodo get_data di CSVFile, che ritorna una lista di liste
         if string_data==[]:
             raise ExamException('errore, lista csv file vuota')
+        if string_data is None:
+            raise ExamException('errore, il metodo get_data di csvfile è nullo')
         numerical_data=[] #creo una lista che possa contenere i valori validi
         for item in string_data:
             if item is not list:
@@ -86,41 +88,41 @@ def detect_similar_monthly_variations(time_series,years):
     if anno1-anno2!=1 and anno1-anno2!=-1:
         raise ExamException('errore, anni non consecutivi')
     prima_lista=[] #lista elementi primo anno
+    existence1=False
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno1
         tempo=element[0].split('-') #divido anno e mese
         if tempo[0]==anno1:
+            existence1=True
             mese=(tempo[1])-1
             try:
                 prima_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del primo anno')
     seconda_lista=[] #lista elementi secondo anno
+    if existence1 is False:
+        raise ExamException('errore, primo anno di years non valido')
+    existence2=False
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno2
         tempo=element[0].split('-') #divido anno e meso
         if tempo[0]==anno2:
+            existence2=True
             mese=(tempo[1])-1
             try:
                 seconda_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del secondo anno')
+    if existence2 is False:
+        raise ExamException('errore, secondo anno di years non valido')
     if prima_lista==[]:
         raise ExamException('errore, lista anno1 vuota')
     if prima_lista is not list:
         raise ExamException('errore, lista anno1 non è una lista')
-    if len(prima_lista)!=12:
-        for i in enumerate(12):
-            if prima_lista[i] is None:
-                prima_lista.insert(i-1, None) #la lista deve avere 12 valori in modo da poter confrontare tutti i mesi
     if seconda_lista==[]:
         raise ExamException('errore, lista anno2 vuota')
     if seconda_lista is not list:
         raise ExamException('errore, lista anno2 non è una lista')
-    if len(seconda_lista)!=12:
-        for i in enumerate(12):
-            if seconda_lista[i] is None:
-                seconda_lista.insert(i-1, None) #la lista deve avere 12 valori in modo da poter confrontare tutti i mesi
     variazione1=[] #lista con variazioni tra valori prima lista
     for i in prima_lista:
             if i==prima_lista[0]:
@@ -128,7 +130,7 @@ def detect_similar_monthly_variations(time_series,years):
             elif i==None:
                 differenza=None
                 prev_value=i
-                variazione1.append(int(differenza))
+                variazione1.append(differenza)
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
@@ -140,7 +142,7 @@ def detect_similar_monthly_variations(time_series,years):
             elif i==None:
                 differenza=None
                 prev_value=i
-                variazione2.append(int(differenza))
+                variazione2.append(differenza)
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
@@ -163,7 +165,7 @@ def detect_similar_monthly_variations(time_series,years):
             lista_finale.append(False)
         else:
             differenza=variazione1[i]-variazione2[i] #differenze tra le stesse coppie di mesi in anni consecutivi
-        if type(differenza)>=-2 and type(differenza)<=2:
+        if differenza>=-2 and differenza<=2:
             lista_finale.append(True)
         else:
             lista_finale.append(False)
