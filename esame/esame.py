@@ -42,11 +42,21 @@ class CSVTimeSeriesFile(CSVFile):
                 date[0]=int(date[0])
                 date[1]=int(date[1])
             except ValueError:
-                raise ExamException('errore, anno o meso sono valori non interi')
+                pass
             try:
                 item[1]=int(item[1]) #passeggeri
             except ValueError:
-                raise ExamException('errore, numero passeggeri non intero')
+                pass
+            if item==string_data[0]:
+                prev_anno=int(date[0])
+                prev_mese=int(date[1])
+            else:
+                if date[0]<prev_anno:
+                    raise ExamException('errore, anni non ordinati')
+                if date[1]<=prev_mese and date[0]==prev_anno:
+                    raise ExamException('errore, mesi non ordinati o duplicati')
+                prev_anno=int(date[0])
+                prev_mese=int(date[1])
             if int(date[0])>0 and int(date[1])>0 and int(date[1])<=12 and int(item[1])>=0:
                 numerical_data.append(item) #aggiungo la lista contenente data e numero passeggeri dopo aver controllato la validità del dato (anno e passeggeri maggiore di 0, mese tra 0 e 12)
             return numerical_data
