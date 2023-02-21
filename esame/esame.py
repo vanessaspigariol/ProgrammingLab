@@ -77,22 +77,22 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, anni non validi')
     if int(anno1)-int(anno2)!=1 and int(anno1)-int(anno2)!=-1:
         raise ExamException('errore, anni non consecutivi')
-    prima_lista=[]
+    prima_lista=[] #lista elementi primo anno
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno1
-        tempo=element[0].split('-')
-        if type(tempo[0])==anno1:
+        tempo=element[0].split('-') #divido anno e mese
+        if tempo[0]==anno1:
             try:
-                prima_lista.append(int(element[1]))
+                prima_lista.append(int(element[1])) #passeggeri anno1
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del primo anno')
-    seconda_lista=[]
+    seconda_lista=[] #lista elementi secondo anno
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno2
-        tempo=element[0].split('-')
-        if type(tempo[0])==anno2:
+        tempo=element[0].split('-') #divido anno e meso
+        if tempo[0]==anno2:
             try:
-                seconda_lista.append(int(element[1]))
+                seconda_lista.append(int(element[1])) #passeggeri anno2
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del secondo anno')
     if prima_lista==[]:
@@ -107,22 +107,22 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, lista anno2 non è una lista')
     if len(seconda_lista)!=12:
         raise ExamException('errore, lista anno2 non ha un elemento per mese')
-    variazione1=[]
+    variazione1=[] #lista con variazioni tra valori prima lista
     for i in prima_lista:
             if i==prima_lista[0]:
-                prev_value=i
+                prev_value=i #gennaio non ha mesi precedenti, quindi non calcolo la differenza
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
-                variazione1.append(float(differenza))
-    variazione2=[]
+                variazione1.append(int(differenza))
+    variazione2=[] #lista con variazioni tra valori seconda lista
     for i in seconda_lista:
             if i==seconda_lista[0]:
-                prev_value=i
+                prev_value=i #gennaio non ha mesi precedenti, quindi non calcolo la differenza
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
-                variazione2.append(float(differenza))
+                variazione2.append(int(differenza))
     if variazione1==[]:
             raise ExamException('errore, variazione1 non ha valori numerici')
     if len(variazione1)!=11:
@@ -137,9 +137,9 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, variazione2 non ha valori')
     lista_finale=[]
     for i in enumerate(10):
-        differenza=variazione1[i]-variazione2[i]
+        differenza=variazione1[i]-variazione2[i] #differenze tra le stesse coppie di mesi in anni consecutivi
         if type(differenza)>=-2 and type(differenza)<=2:
             lista_finale.append(True)
         else:
             lista_finale.append(False)
-    return lista_finale
+    return lista_finale 
