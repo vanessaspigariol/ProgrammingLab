@@ -12,9 +12,9 @@ class CSVFile():
             self.can_read=False
             print('errore, file non leggibile: {}'.format(e))
     def get_data(self):
-        if not salf.can_read:
+        if not self.can_read:
             print('errore, file non aperto o leggibile')
-            return None #fine
+            return None # eventuale fine
         else:
             data=[] #lista vuota per salvarci i dati
             my_file=open(self.name,'r') #riapro il file per non saltare la prima riga
