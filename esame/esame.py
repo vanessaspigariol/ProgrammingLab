@@ -226,7 +226,5 @@ def detect_similar_monthly_variations(time_series, years):
             lista_finale.append(False)  #non simili
     return lista_finale
 
-time_series_file = CSVTimeSeriesFile(name='data.csv')
-time_series = time_series_file.get_data()
-years=[1950,1951]
-print(detect_similar_monthly_variations(time_series, years))
+#years=[1949,1950]
+#print(detect_similar_monthly_variations(time_series, years))
