@@ -1,7 +1,6 @@
 class ExamException(Exception):
     pass
 
-
 class CSVFile():
     def __init__(self, name):
         self.name = name  #inizializzo nome file
@@ -89,7 +88,7 @@ time_series = time_series_file.get_data()
 def detect_similar_monthly_variations(time_series, years):
     #controllo liste in input
     if time_series == []:
-        raise ExamException('errore, lista dati vuota')
+        raise ExamException('errore, lista time_series vuota')
 
     if years == []:
         raise ExamException('errore, lista anni vuota')
@@ -226,3 +225,8 @@ def detect_similar_monthly_variations(time_series, years):
         else:
             lista_finale.append(False)  #non simili
     return lista_finale
+
+time_series_file = CSVTimeSeriesFile(name='data.csv')
+time_series = time_series_file.get_data()
+years=[1950,1951]
+print(detect_similar_monthly_variations(time_series, years))
