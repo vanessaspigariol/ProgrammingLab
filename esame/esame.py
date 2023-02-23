@@ -28,45 +28,56 @@ class CSVFile():
 
 class CSVTimeSeriesFile(CSVFile):
     def get_data(self):
-        string_data=super().get_data() #chiamo metodo get_data di CSVFile, che ritorna una lista di liste
+        #chiamo metodo get_data di CSVFile, ritorna una lista di liste e faccio i controlli
+        string_data=super().get_data() 
         if string_data==[]:
             raise ExamException('errore, lista csv file vuota')
         if string_data is None:
             raise ExamException('errore, il metodo get_data di csvfile è nullo')
+        if len(string_data)==0:
+            raise ExamException('errore lunghezza lista')
+            
         numerical_data=[] #creo una lista che possa contenere i valori validi
         for item in string_data:
+            if item==[]:
+                raise ExamException('errore, elemento lista è una lista vuota')
             if item is not list:
                 raise ExamException('errore, elemento lista non è una lista: manca uno dei due valori')
             if len(item)<=2:
                 raise ExamException('errore, lista non contiene due valori') #la lista deve avere almeno due valori (data e numero passeggeri)
-            date=item[0].split('-') #splitto il primo elemento dela lista(la data) per separare anno e mese
+                
+            #controllo che i valori siano interi
+            date=item[0].split('-') #separo anno e mese
             try:
-                date[0]=int(date[0])
-                date[1]=int(date[1])
-            except ValueError:
+                anno=int(date[0]) #anno è un intero
+                mese=int(date[1]) #mese è un intero
+            except Exception:
                 pass
             try:
-                item[1]=int(item[1]) #passeggeri
-            except ValueError:
+                passeggero=int(item[1]) #passeggero è un intero
+            except Exception:
                 pass
-            if item==string_data[0]:
-                prev_anno=int(date[0])
-                prev_mese=int(date[1])
+                
+            #controllo che i dati siano ordinati. se lo sono li aggiungo alla lista numerical_data
+            if item==string_data[0]: 
+                prev_anno=anno
+                prev_mese=mese
             else:
-                if date[0]<prev_anno:
+                if anno<prev_anno:
                     raise ExamException('errore, anni non ordinati')
-                if date[1]<=prev_mese and date[0]==prev_anno:
+                if mese<=prev_mese and anno==prev_anno:
                     raise ExamException('errore, mesi non ordinati o duplicati')
-                prev_anno=int(date[0])
-                prev_mese=int(date[1])
-            if int(date[0])>0 and int(date[1])>0 and int(date[1])<=12 and int(item[1])>=0:
-                numerical_data.append(item) #aggiungo la lista contenente data e numero passeggeri dopo aver controllato la validità del dato (anno e passeggeri maggiore di 0, mese tra 0 e 12)
+                prev_anno=anno
+                prev_mese=mese
+            if anno>0 and mese>0 and mese<=12 and passeggero>=0:
+                numerical_data.append(item) 
             return numerical_data
             
 time_series_file=CSVTimeSeriesFile(name='data.csv')
 time_series=time_series_file.get_data()
 
 def detect_similar_monthly_variations(time_series,years):
+    #controllo liste in input
     if time_series==[]:
         raise ExamException('errore, lista dati vuota')
     if years is not list:
@@ -75,6 +86,8 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, lista anni vuota')
     if len(years)!=2:
         raise ExamException('errore, lista anni ha una lunghezza non valida')
+
+    #distinguo e controllo i due anni della lista years
     try:
         anno1=int(years[0])
     except Exception:
@@ -87,8 +100,10 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, anni non esistenti')
     if anno1-anno2!=1 and anno1-anno2!=-1:
         raise ExamException('errore, anni non consecutivi')
-    prima_lista=[] #lista elementi primo anno
-    existence1=False
+
+    #creo una lista per i valori ciascun anno
+    prima_lista=[] 
+    existence1=False #sarà utile per determinare se il primo anno è presente tra i dati
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno1
         tempo=element[0].split('-') #divido anno e mese
@@ -96,41 +111,62 @@ def detect_similar_monthly_variations(time_series,years):
             existence1=True
             mese=(tempo[1])-1
             try:
-                prima_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
+                #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
+                prima_lista.insert(mese, int(element[1])) 
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del primo anno')
-    seconda_lista=[] #lista elementi secondo anno
     if existence1 is False:
         raise ExamException('errore, primo anno di years non valido')
-    existence2=False
+        
+    seconda_lista=[] #lista elementi secondo anno
+    existence2=False #sarà utile per determinare se il primo anno è presente tra i dati
     for element in time_series:
         #trovo tutti i dati corrispondendi ad anno2
         tempo=element[0].split('-') #divido anno e meso
         if tempo[0]==anno2:
             existence2=True
-            mese=(tempo[1])-1
+            mese=(tempo[1])-1 
             try:
-                seconda_lista.insert(mese, int(element[1])) #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
+                #inserisco il numero dei passeggeri nella posizione corrispondente al mese in cui sono stati rilevati i dati
+                seconda_lista.insert(mese, int(element[1])) 
             except:
                 raise ExamException('errore, non è stato possibile aggiungere un valore alla lista del secondo anno')
     if existence2 is False:
         raise ExamException('errore, secondo anno di years non valido')
+
+    #controllo le due liste ottenute e controllo che abbiano 12 elementi, anche nulli
     if prima_lista==[]:
         raise ExamException('errore, lista anno1 vuota')
     if prima_lista is not list:
         raise ExamException('errore, lista anno1 non è una lista')
+    if len(prima_lista)!=12:
+        for i in enumerate(11):
+            if prima_lista[i] is not None:
+                pass
+            else:
+                prima_lista[i]=None
     if seconda_lista==[]:
         raise ExamException('errore, lista anno2 vuota')
     if seconda_lista is not list:
         raise ExamException('errore, lista anno2 non è una lista')
-    variazione1=[] #lista con variazioni tra valori prima lista
+    if len(seconda_lista)!=12:
+        for i in enumerate(11):
+            if seconda_lista[i] is not None:
+                pass
+            else:
+                seconda_lista[i]=None
+
+    #creo liste per salvare le variazioni tra mesi
+    variazione1=[] 
     for i in prima_lista:
             if i==prima_lista[0]:
                 prev_value=i #gennaio non ha mesi precedenti, quindi non calcolo la differenza
             elif i==None:
-                differenza=None
                 prev_value=i
-                variazione1.append(differenza)
+                variazione1.append(None)
+            elif prev_value==None:
+                variazione1.append(None)
+                prev_value=i
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
@@ -140,9 +176,11 @@ def detect_similar_monthly_variations(time_series,years):
             if i==seconda_lista[0]:
                 prev_value=i #gennaio non ha mesi precedenti, quindi non calcolo la differenza
             elif i==None:
-                differenza=None
                 prev_value=i
-                variazione2.append(differenza)
+                variazione2.append(None)
+            elif prev_value==None:
+                variazione2.append(None)
+                prev_value=i
             else:
                 differenza=int(i-prev_value)
                 prev_value=i
@@ -159,6 +197,8 @@ def detect_similar_monthly_variations(time_series,years):
         raise ExamException('errore, lista variazione2 non ha 11 elementi')
     if variazione2==None:
         raise ExamException('errore, variazione2 non ha valori')
+
+    #lista finale confronterà parallelamente le variazioni delle due liste ritornando vero o falso
     lista_finale=[]
     for i in enumerate(10):
         if variazione1[i] is None or variazione2[i] is None:
@@ -166,7 +206,8 @@ def detect_similar_monthly_variations(time_series,years):
         else:
             differenza=variazione1[i]-variazione2[i] #differenze tra le stesse coppie di mesi in anni consecutivi
         if differenza>=-2 and differenza<=2:
-            lista_finale.append(True)
+            lista_finale.append(True) #simili 
         else:
-            lista_finale.append(False)
+            lista_finale.append(False) #non simili
     return lista_finale 
+
