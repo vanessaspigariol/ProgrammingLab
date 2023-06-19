@@ -17,15 +17,12 @@ class CSVTimeSeriesFile():
         try:
             my_file=open(self.name, 'r')
             my_file.readline()
-            #chiudo il file
             my_file.close()
         except Exception:
             raise ExamException('Errore: non è stato possibile aprire o leggere il file!')
 
         ##SALVATAGGIO DATI VALIDI
         lista=[]
-        
-        #riapro il file
         my_file=open(self.name, 'r')
 
         #leggo il file linea per linea
@@ -37,7 +34,7 @@ class CSVTimeSeriesFile():
             #elements[0]=data anno-mese
             #elements[1]=passeggeri
 
-            #se NON sto processando l'intestazione
+            #procedo solo se non sto processando l'intestazione
             if elements[0].strip() == 'date':
                 continue
 
@@ -56,7 +53,7 @@ class CSVTimeSeriesFile():
                 continue
             
                             
-            #valori negativi
+            #rimuovo passeggeri con valori negativi
             if int(elements[1])<=0:
                 continue
 
@@ -76,7 +73,7 @@ class CSVTimeSeriesFile():
             if len(item) < 2:
                 continue  
 
-            #trasformo i dati in intero e assegno il valore a delle variabili più chiare, utili per il prossimo controllo
+            #trasformo i dati in intero e assegno i valori a variabili più chiare, utili per il prossimo controllo
             date = item[0].split('-')  #separo anno e mese
             try:
                 anno = int(date[0])  
@@ -84,10 +81,7 @@ class CSVTimeSeriesFile():
                 passeggero = int(item[1])
             except Exception:
                 continue
-                        
-
-            #controllo che i dati siano ordinati per aggungerli a numerical_data
-            #altrimenti alzo un'eccezione
+                    
             if item == lista[0]:
                 prev_anno = anno
                 prev_mese = mese
@@ -103,6 +97,7 @@ class CSVTimeSeriesFile():
             if anno > 0 and mese > 0 and mese <= 12 and passeggero > 0:
                 numerical_data.append(item)
 
+        #lista definitiva
         return numerical_data
         
 
@@ -115,7 +110,7 @@ class CSVTimeSeriesFile():
 
 def compute_avg_monthly_difference(time_series, first_year, last_year):
 
-    ##CONTROLLI DATI INPUT
+    ##CONTROLLO DATI INPUT
     if not time_series:
         raise ExamException('Errore, lista time_series vuota!')
     
@@ -128,7 +123,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
     if anno_inizio > anno_fine:
         raise ExamException('Errore, anno inizio maggiore di anno fine!')
         
-    #anno inizio nella lista
+    #trovo anno inizio nella lista
     found_inizio = False 
     for el in time_series:
         #variabile temporanea per capire se gli anni in input sono presenti nella lista
@@ -141,7 +136,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
     if not found_inizio:
         raise ExamException('Errore, anno inizio non nella lista!')
 
-    #anno fine nella lista
+    #trovo anno fine nella lista
     found_fine = False
     for el in time_series:
         #variabile temporanea per capire se gli anni in input sono presenti nella lista 
@@ -152,7 +147,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
             break
 
     if not found_fine:
-        raise ExamException('Errore! Anno fine non nella lista!')
+        raise ExamException('Errore, anno fine non nella lista!')
         
 
     
@@ -169,7 +164,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
     for i in range(12):
         annata.append(0)
 
-    #nel ciclo for sostituisco gli zeri con il numero di passeggeri nella posizione corrispondente al mese-1 in cui sono stati rilevati, se sono stati rilevati
+    #nel ciclo for sostituisco gli zeri con il numero di passeggeri nella posizione corrispondente al mese-1 in cui sono stati rilevati
     for element in time_series:
         tempo = element[0].split('-')
         try:
@@ -180,7 +175,6 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
             continue
         
         #restiamo nell'arco di tempo determinato dagli anni presi in input
-        #anno>anno_fine+1 per non escludere l'estremo
         if anno < anno_inizio or anno > anno_fine:
             continue
         
@@ -207,7 +201,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
     listaanni.append(annata)
     #print(listaanni)
 
-    ##FINE PRIMA PARTE:
+    ##FINE PRIMA PARTE
     #lista 'listaanni' di 12 elementi per ogni anno, dove l’elemento all’indice i corrisponde al numero di passeggeri per il mese i+1 in quell’anno
     
 
@@ -215,7 +209,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
     #ora posso iniziare a calcolare le medie, che saranno salvate nella lista 'medie'
     medie=[]
     
-    #conto quante liste sono presenti nella lista 'totale'
+    #conto quante liste sono presenti nella lista 'listaanni'
     numero_anni=len(listaanni)
     divisore=numero_anni-1
     
@@ -259,7 +253,7 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
             som+=diff
             counter-=1
 
-            #intervallo di più di due anni e per un mese abbiamo meno di due misurazioni, verrà tornato 0 come valore finale per quel mese
+        #intervallo di più di due anni e per un mese abbiamo meno di due misurazioni, verrà tornato 0 come valore finale per quel mese
         if numero_anni>2 and divisore<2:
             media=0
         
@@ -269,6 +263,8 @@ def compute_avg_monthly_difference(time_series, first_year, last_year):
         medie.append(media)   
         
     ##FINE SECONDA PARTE
+
+    #FINE PROGRAMMA
     return medie
     
 
